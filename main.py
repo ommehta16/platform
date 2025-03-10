@@ -1,3 +1,5 @@
+# https://flask.palletsprojects.com/en/stable/quickstart/
+
 import grader
 import json
 import os
@@ -14,10 +16,11 @@ import traceback
 from flask import Flask, request, render_template, redirect, abort
 app = Flask(__name__)
 
+DEBUG = True
 max_testcases = 10
 games = []
 users = []
-adminPass = open("SECRET.txt", "r").read().rstrip() #''.join(random.choice(string.ascii_lowercase) for i in range(40))
+adminPass = "a" #open("SECRET.txt", "r").read().rstrip() #''.join(random.choice(string.ascii_lowercase) for i in range(40))
 
 # PROBLEM CREATION/EDITING/SOLUTION GRADING
 def sortByDifficulty(x):
@@ -53,6 +56,7 @@ def get_problem_names():
     return problems
 
 def admin_check(req):
+    if DEBUG: return True
     return req.cookies.get("userid") == adminPass
 
 @app.route("/list", methods=["GET","POST"])
@@ -309,6 +313,7 @@ def check_password(hashed_password, user_password):
     return password == hashlib.sha256(salt.encode() + user_password.encode()).hexdigest()
 
 def is_admin(email, username, hashedPass):
+    print("lol")
     if email == "jierueic@gmail.com" and username == "knosmos" and check_password("c8cd035724dd2cc48f87c17f21c4cb7f9bdf9cf767bc88e5fcefefbf8f73dd0f:533a7722507f4d1da1bdfca16bf70675", hashedPass):
         return True
     if email == "nicholas.d.hagedorn@gmail.com" and username == "Nickname" and check_password("6d6438706baee7793b76597a15628859cf9b47c0097f814d06187247d120ceb7:6316c3b35173482db353c2a2baa8301e", hashedPass):
