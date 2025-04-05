@@ -4,13 +4,23 @@ import time
 
 olddir = os.getcwd()
 
+def elim_whitespace(a: str) -> str:
+    '''
+    sanitizes whitespace for each line individually
+    '''
+    strippedLines = list(map(str.rstrip, a.splitlines()))
+    return "\n".join(strippedLines).replace("\r","")
+
 def grade(file, tests, language):
-    # Takes in a filename and testcases and runs it using each test case
-    # For each test case:
-    #   If the program takes over TIME_LIMIT to execute, it returns "Time Limit Exceeded" for that testcase
-    #   If the program produces incorrect output, it returns "Wrong Answer"
-    #   If the program crashes, it returns "Runtime Error"
-    #   Otherwise, it returns "Accepted"
+    '''
+     Takes in a filename and testcases and runs it using each test case
+
+     For each test case:
+       - If the program takes over `TIME_LIMIT` to execute, it returns `"Time Limit Exceeded"` for that testcase
+       - If the program produces incorrect output, it returns `"Wrong Answer"`
+       - If the program crashes, it returns `"Runtime Error"`
+       - Otherwise, it returns `"Accepted"`
+    '''
 
     results = []
     
@@ -18,7 +28,6 @@ def grade(file, tests, language):
     os.chdir("/".join(file.split("/")[:-1]))
 
     file = file.split("/")[-1]
-
     # compile
     if language == "java":
         Popen(["javac", file], stdout=PIPE, stderr=PIPE).communicate()
@@ -56,7 +65,7 @@ def grade(file, tests, language):
             process = Popen(["./a.out"], stdout=PIPE, stderr=PIPE, stdin=PIPE, text=True)
             TIME_LIMIT = 1
         try:
-            output = process.communicate(input = str(data), timeout = TIME_LIMIT)
+            output = process.communicate(input = elim_whitespace(str(data)), timeout = TIME_LIMIT)
             time_elapsed = (time.perf_counter_ns() - time_start)//1000000
         except subprocess.TimeoutExpired:
             process.kill()
@@ -67,12 +76,17 @@ def grade(file, tests, language):
             print(output[1])
             results.append(["RE", time_elapsed])
             continue
-        if output[0].rstrip().replace("\r","") == solution.rstrip().replace("\r",""):
+
+        out:str = elim_whitespace(output[0])
+        sol:str = elim_whitespace(solution)
+        
+        if out == sol:
             results.append(["AC", time_elapsed])
             continue
         else: # Output doesn't match
-            #print("program outputted:", output[0])
-            #print("correct solution:", solution)
+            # print("input was:", str(data))
+            # print("program outputted:", output[0])
+            # print("correct solution:", solution)
             print("wrong answer on test", len(results))
             results.append(["WA", time_elapsed])
     os.chdir(olddir)

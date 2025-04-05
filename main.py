@@ -17,7 +17,7 @@ from flask import Flask, request, render_template, redirect, abort
 app = Flask(__name__)
 
 DEBUG = True
-max_testcases = 10
+max_testcases:int = 10
 games = []
 users = []
 adminPass = "a" #open("SECRET.txt", "r").read().rstrip() #''.join(random.choice(string.ascii_lowercase) for i in range(40))
@@ -204,7 +204,7 @@ def random_player_id():
     return "".join([random.choice(string.ascii_uppercase + string.ascii_lowercase + "1234567890") for _ in range(20)])
 
 class Game:
-    def __init__(self, problems, totalTime, tst, doTeams):
+    def __init__(self, problems:list, totalTime, tst:str="off", doTeams:bool=False):
         self.id = random_id()
         self.players = []
         self.status = "waiting"
@@ -510,4 +510,4 @@ games = running_games
 '''
 
 if __name__ == "__main__":
-    app.run("0.0.0.0")
+    app.run("127.0.0.1")
